@@ -108,7 +108,8 @@ return [
     |
     */
 
-    'refresh_ttl' => env('JWT_REFRESH_TTL', 20160),
+    'refresh_ttl' => env('JWT_REFRESH_TTL', 1.440), //1 hari
+    // 'refresh_ttl' => env('JWT_REFRESH_TTL', 20160), //2 minggu
 
     /*
     |--------------------------------------------------------------------------

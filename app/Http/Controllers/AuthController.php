@@ -19,10 +19,10 @@ class AuthController extends Controller
     private $authRepository;
     public function __construct()
     {
-        // $this->middleware('auth:api', ['except' => ['login', 'register']]);
         // time zone set ID
-        date_default_timezone_set('Asia/Jakarta');
+        // date_default_timezone_set('Asia/Jakarta');
         $this->authRepository = new AuthRepository();
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
     public function login(Request $request)
@@ -67,7 +67,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $token = JWTAuth::login($user);
+        $token = AUTH::guard('api')->login($user);
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
@@ -81,7 +81,7 @@ class AuthController extends Controller
 
     public function logout()
     {
-        JWTAuth::logout();
+        AUTH::guard('api')->logout();
         return response()->json([
             'status' => 'success',
             'message' => 'Successfully logged out',
@@ -90,9 +90,26 @@ class AuthController extends Controller
 
     public function me()
     {
+        // try {
+        //     $user = auth('api')->userOrFail();
+        //     return response()->json([
+        //         'status' => 'success',
+        //         'user' => auth('api')->user()
+        //         // 'user' => AUTH::guard('api')->user()
+        //     ]);
+        // } catch (\PHPOpenSourceSaver\JWTAuth\Exceptions\UserNotDefinedException $e) {
+        //     // do something
+        //     return response()->json([
+        //         // 'status' => 'success',
+        //         // 'user' => auth('api')->user()
+        //         // 'user' => AUTH::guard('api')->user()
+        //         'Unauthenticated.'
+        //     ]);
+        // }
         return response()->json([
             'status' => 'success',
-            'user' => AUTH::guard('api')->user()
+            'user' => Auth::user()
+            // 'user' => AUTH::guard('api')->user()
         ]);
     }
 

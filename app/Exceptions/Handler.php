@@ -66,9 +66,9 @@ class Handler extends ExceptionHandler
                         'message' => 'Token Absen.',
                     ], 401);
                 }
-                // return response()->json([
-                //     'message' => 'Unauthenticated.',
-                // ], 401);
+                return response()->json([
+                    'message' => 'Unauthenticated.',
+                ], 401);
             }
         });
     }
