@@ -2,16 +2,27 @@
 
 namespace App\Http\Controllers;
 
+use Throwable;
 use App\Models\User;
+use App\Repositories\AuthRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Response;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
+    private $authRepository;
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        // $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        // time zone set ID
+        date_default_timezone_set('Asia/Jakarta');
+        $this->authRepository = new AuthRepository();
     }
 
     public function login(Request $request)
@@ -21,8 +32,8 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
         $credentials = $request->only('email', 'password');
+        $token = $this->authRepository->login($credentials);
 
-        $token = Auth::attempt($credentials);
         if (!$token) {
             return response()->json([
                 'status' => 'error',
@@ -30,7 +41,8 @@ class AuthController extends Controller
             ], 401);
         }
 
-        $user = Auth::user();
+        $user = AUTH::guard('api')->user();
+
         return response()->json([
             'status' => 'success',
             'user' => $user,
@@ -55,7 +67,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $token = Auth::login($user);
+        $token = JWTAuth::login($user);
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
@@ -69,7 +81,7 @@ class AuthController extends Controller
 
     public function logout()
     {
-        Auth::logout();
+        JWTAuth::logout();
         return response()->json([
             'status' => 'success',
             'message' => 'Successfully logged out',
@@ -80,7 +92,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'user' => Auth::user(),
+            'user' => AUTH::guard('api')->user()
         ]);
     }
 
@@ -88,9 +100,9 @@ class AuthController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'user' => Auth::user(),
+            'user' => AUTH::guard('api')->user(),
             'authorisation' => [
-                'token' => Auth::refresh(),
+                'token' => AUTH::guard('api')->refresh(),
                 'type' => 'bearer',
             ]
         ]);
