@@ -8,6 +8,6 @@ class AuthRepository
 {
     public function login($credentials)
     {
-        return Auth::guard('api')->setTTL(1)->attempt($credentials);
+        return Auth::guard('api')->attempt($credentials);
     }
 };

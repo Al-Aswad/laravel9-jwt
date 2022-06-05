@@ -9,10 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
-use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
-use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
-use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
@@ -20,9 +16,9 @@ class AuthController extends Controller
     public function __construct()
     {
         // time zone set ID
-        // date_default_timezone_set('Asia/Jakarta');
+        date_default_timezone_set('Asia/Jakarta');
         $this->authRepository = new AuthRepository();
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('jwt.verify', ['except' => ['login', 'register']]);
     }
 
     public function login(Request $request)
@@ -90,26 +86,10 @@ class AuthController extends Controller
 
     public function me()
     {
-        // try {
-        //     $user = auth('api')->userOrFail();
-        //     return response()->json([
-        //         'status' => 'success',
-        //         'user' => auth('api')->user()
-        //         // 'user' => AUTH::guard('api')->user()
-        //     ]);
-        // } catch (\PHPOpenSourceSaver\JWTAuth\Exceptions\UserNotDefinedException $e) {
-        //     // do something
-        //     return response()->json([
-        //         // 'status' => 'success',
-        //         // 'user' => auth('api')->user()
-        //         // 'user' => AUTH::guard('api')->user()
-        //         'Unauthenticated.'
-        //     ]);
-        // }
         return response()->json([
             'status' => 'success',
-            'user' => Auth::user()
-            // 'user' => AUTH::guard('api')->user()
+            // 'user' => Auth::user()
+            'user' => AUTH::guard('api')->user()
         ]);
     }
 
@@ -119,7 +99,7 @@ class AuthController extends Controller
             'status' => 'success',
             'user' => AUTH::guard('api')->user(),
             'authorisation' => [
-                'token' => AUTH::guard('api')->refresh(),
+                // 'token' => AUTH::guard('api')->refresh(),
                 'type' => 'bearer',
             ]
         ]);

@@ -53,19 +53,19 @@ class Handler extends ExceptionHandler
         // exception handling JWT
         $this->renderable(function (Throwable $e, $request) {
             if ($request->is('api/*')) {
-                if ($e instanceof TokenExpiredException) {
-                    return response()->json([
-                        'message' => 'Token Expire.',
-                    ], 401);
-                } else if ($e instanceof TokenInvalidException) {
-                    return response()->json([
-                        'message' => 'Token Invalid.',
-                    ], 401);
-                } else if ($e instanceof JWTException) {
-                    return response()->json([
-                        'message' => 'Token Absen.',
-                    ], 401);
-                }
+                // if ($e instanceof TokenExpiredException) {
+                //     return response()->json([
+                //         'message' => 'Token Expire.',
+                //     ], 401);
+                // } else if ($e instanceof TokenInvalidException) {
+                //     return response()->json([
+                //         'message' => 'Token Invalid.',
+                //     ], 401);
+                // } else if ($e instanceof JWTException) {
+                //     return response()->json([
+                //         'message' => 'Token Absen.',
+                //     ], 401);
+                // }
                 return response()->json([
                     'message' => 'Unauthenticated.',
                 ], 401);
